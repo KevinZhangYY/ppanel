@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     });
 
     // Save metrics
-    const metric = await prisma.metric.create({
+    await prisma.metric.create({
       data: {
         vpsId: vps.id,
         cpuUsage: parseFloat(cpuUsage),

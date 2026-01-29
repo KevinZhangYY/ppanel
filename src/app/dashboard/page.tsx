@@ -5,8 +5,6 @@ import axios from "axios";
 import { 
   Server, 
   Activity, 
-  Cpu, 
-  Database, 
   Zap,
   Plus,
   ArrowRight

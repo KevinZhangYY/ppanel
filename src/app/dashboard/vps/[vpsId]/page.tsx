@@ -17,7 +17,6 @@ import {
   Cpu, 
   Database, 
   HardDrive, 
-  Activity,
   ArrowLeft,
   RefreshCw
 } from "lucide-react";
@@ -42,18 +41,25 @@ interface VPS {
 }
 
 export default function VPSDetailPage() {
-  const { vpsId } = useParams();
+  const params = useParams();
+  const vpsIdParam = params?.vpsId;
+  const vpsId = Array.isArray(vpsIdParam) ? vpsIdParam[0] : vpsIdParam;
   const [vps, setVps] = useState<VPS | null>(null);
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
+  const fetchData = async (targetId?: string) => {
+    if (!targetId) {
+      setLoading(false);
+      return;
+    }
     try {
       const [vpsRes, metricsRes] = await Promise.all([
         axios.get(`/api/vps`), // Simplified, usually you'd have a detail endpoint
-        axios.get(`/api/vps/${vpsId}/metrics?limit=30`)
+        axios.get(`/api/vps/${targetId}/metrics?limit=30`)
       ]);
-      const currentVps = vpsRes.data.find((v: any) => v.id === vpsId);
+      const vpsList = vpsRes.data as VPS[];
+      const currentVps = vpsList.find((v) => v.id === targetId) || null;
       setVps(currentVps);
       setMetrics(metricsRes.data);
     } catch (error) {
@@ -64,8 +70,8 @@ export default function VPSDetailPage() {
   };
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 30000); // Refresh every 30s
+    fetchData(vpsId);
+    const interval = setInterval(() => fetchData(vpsId), 30000);
     return () => clearInterval(interval);
   }, [vpsId]);
 
@@ -74,8 +80,9 @@ export default function VPSDetailPage() {
 
   const latestMetric = metrics[metrics.length - 1];
 
-  const formatTime = (timeStr: any) => {
-    return new Date(timeStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formatTime = (value: string | number | Date | undefined) => {
+    if (!value) return "";
+    return new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   return (

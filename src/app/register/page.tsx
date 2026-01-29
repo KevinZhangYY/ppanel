@@ -19,8 +19,12 @@ export default function RegisterPage() {
     try {
       await axios.post("/api/register", { email, password, name });
       router.push("/login");
-    } catch (err: any) {
-      setError(err.response?.data || "Registration failed");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data || "Registration failed");
+      } else {
+        setError("Registration failed");
+      }
     }
   };
 

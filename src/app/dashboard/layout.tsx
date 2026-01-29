@@ -9,8 +9,7 @@ import {
   Bell, 
   Settings, 
   LogOut,
-  Menu,
-  X
+  Menu
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -19,7 +18,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession() || { data: null, status: 'loading' };
+  const { status } = useSession() || { status: "loading" };
   const router = useRouter();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
